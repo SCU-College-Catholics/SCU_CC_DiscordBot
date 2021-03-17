@@ -30,37 +30,61 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+
     if 'happy birthday' in message.content.lower():
         await message.channel.send('Happy Birthday! 🎈🎉')
 
     if '-sod' in message.content.lower():
         await message.channel.send('🙏Today\'s celebrations are: ')
         today = date.today()
+        # YYYY/MM/DD
+        d = today.strftime("%Y/%m/%d")
+        # Send an api request to get the SOD
+        url = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/' + d
+        # url = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/2021/03/16'
 
-    # dd/mm/YY  YYYY/MM/DD
-    d = today.strftime("%Y/%m/%d")
-    # Send an api request to get the SOD
-    # url = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/' + d
-    url = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/2021/03/16'
-    # url = 'https://apple.com'
-    print(url)
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
-    # HEADERS = {
-    #     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36',
-    # }
-    response = requests.get(url, timeout = 1, headers=headers)
-    # response = requests.get('http://calapi.inadiutorium.cz/api/v0/en/calendars/default/2021/03/16')
-    print(response.status_code)
-    print(response.text)
+        print(url)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response = requests.get(url, timeout = 1, headers=headers)
 
-    # print(response.json)
-    # json.dumps(response)
+        print(response.status_code)
+        print(response.text)
 
-    data = response.json()
-    celebrations = data["celebrations"]
-    print(celebrations)
-    for c in celebrations:
-        await message.channel.send(c['rank'] + ': **' + c["title"] + '** with liturgical color ' + c["colour"])
+        data = response.json()
+        celebrations = data["celebrations"]
+        print(celebrations)
+        for c in celebrations:
+            await message.channel.send(c['rank'] + ': **' + c["title"] + '** with liturgical color ' + c["colour"])
+
+    if '-purgatory' in message.content.lower():
+        vcs = message.guild.voice_channels
+        nm = message.content[11:]
+        own = message.guild.get_member_named(nm)
+        if own == None or own.name == 'kfenole':
+            await message.channel.send('I can\'t send that person to purgatory, but I can send you!')
+            own = message.author
+        for vc in vcs:
+            if vc.name == 'Purgatory':
+                await own.move_to(vc)
+                if own in vc.members:
+                    msg = 'Sent ' + own.name + ' to purgatory. Purgatory go brr!'
+                    await message.channel.send(msg)
+    
+    if '-dadjoke' in message.content.lower() or '-dad joke' in message.content.lower():
+        # This api is not reliable at all
+        # https://us-central1-dadsofunny.cloudfunctions.net/DadJokes/random/jokes
+        url = 'https://us-central1-dadsofunny.cloudfunctions.net/DadJokes/random/jokes'
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response = requests.get(url, timeout = 2, headers=headers)
+        print(response.status_code)
+        if response.status_code == 429:
+            await message.channel.last_message.delete()
+        print(response.headers)
+        print(response.text)
+        data = response.json()
+        await message.channel.send(data["setup"])
+        await message.channel.send(data["punchline"])
+
         
 
 
