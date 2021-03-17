@@ -5,6 +5,7 @@ import os
 import discord
 import requests
 import json
+import time
 from dotenv import load_dotenv
 from datetime import date
 
@@ -19,7 +20,7 @@ async def on_ready():
     # print(f'{client.user} has connected to Discord!')
     for guild in client.guilds:
         if guild.name == GUILD:
-            break
+            print(guild.name)
 
     print(
         f'{client.user} is connected to the following guild:\n'
@@ -97,10 +98,11 @@ async def on_message(message):
             await message.channel.last_message.delete()
             return
         data = response.json()
-        if (data["joke"]):
+        if (data["type"] == "single"):
             await message.channel.send(data["joke"])
         else:
             await message.channel.send(data["setup"])
+            time.sleep(3)
             await message.channel.send(data["delivery"])
 
         
