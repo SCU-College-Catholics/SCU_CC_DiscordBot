@@ -90,7 +90,7 @@ async def on_message(message):
         await message.channel.send(data["punchline"])
     
     if '-joke' in message.content.lower():
-        url = 'https://v2.jokeapi.dev/joke/Pun?blacklistFlags=nsfw,religious,political,racist,sexist,explicit'
+        url = 'https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&safe-mode'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         response = requests.get(url, timeout = 2, headers=headers)
         if response.status_code != 200:
@@ -98,11 +98,14 @@ async def on_message(message):
             await message.channel.last_message.delete()
             return
         data = response.json()
+        print(data["safe"])
+        if (data["safe"] == False):
+            return
         if (data["type"] == "single"):
             await message.channel.send(data["joke"])
         else:
             await message.channel.send(data["setup"])
-            time.sleep(3)
+            time.sleep(2)
             await message.channel.send(data["delivery"])
 
         
