@@ -60,9 +60,12 @@ async def on_message(message):
         vcs = message.guild.voice_channels
         nm = message.content[11:]
         own = message.guild.get_member_named(nm)
-        if own == None or own.name == 'kfenole':
-            await message.channel.send('I can\'t send that person to purgatory, but I can send you!')
+        if own == None or own.name == 'kfenole' or own.name == 'The Mexican One':
             own = message.author
+            if (own.voice.channel):
+                await message.channel.send('I can\'t send that person to purgatory, but I can send you!')
+        if (own.voice.channel == False):
+            return
         for vc in vcs:
             if vc.name == 'Purgatory':
                 await own.move_to(vc)
@@ -84,6 +87,21 @@ async def on_message(message):
         data = response.json()
         await message.channel.send(data["setup"])
         await message.channel.send(data["punchline"])
+    
+    if '-joke' in message.content.lower():
+        url = 'https://v2.jokeapi.dev/joke/Pun?blacklistFlags=nsfw,religious,political,racist,sexist,explicit'
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response = requests.get(url, timeout = 2, headers=headers)
+        if response.status_code != 200:
+            print(response.status_code)
+            await message.channel.last_message.delete()
+            return
+        data = response.json()
+        if (data["joke"]):
+            await message.channel.send(data["joke"])
+        else:
+            await message.channel.send(data["setup"])
+            await message.channel.send(data["delivery"])
 
         
 
