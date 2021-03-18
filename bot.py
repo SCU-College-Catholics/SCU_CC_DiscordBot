@@ -106,7 +106,7 @@ async def on_message(message):
         if response.status_code != 200:
             print(response.status_code)
             print(response.headers)
-            # await message.channel.last_message.delete()
+            await message.channel.last_message.delete()
             return
         
         data = response.json()
@@ -123,13 +123,22 @@ async def on_message(message):
         if response.status_code != 200:
             print(response.status_code)
             print(response.headers)
-            # await message.channel.last_message.delete()
+            await message.channel.last_message.delete()
             return
         
         data = response.json()
         
         await message.channel.send(data["contents"]["translated"])
 
+    if 'depress' in message.content.lower() or 'affirmation' in message.content.lower() or 'sad' in message.content.lower():
+        response = requests.get('https://www.affirmations.dev')
+        if response.status_code != 200:
+            print(response.status_code)
+            print(response.headers)
+            return
+        
+        data = response.json()
+        await message.channel.send('Here\'s an affirmation to lift your spirits: **' + data["affirmation"] + '**')
 
         
 
