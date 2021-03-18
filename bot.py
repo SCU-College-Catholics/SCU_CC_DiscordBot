@@ -113,7 +113,7 @@ async def on_message(message):
         
         await message.channel.send(data["contents"]["translated"])
     if '-gungan' in message.content.lower() or '-jarjar' in message.content.lower():
-        strn = message.content[6:]
+        strn = message.content[8:]
         url = 'https://api.funtranslations.com/translate/gungan.json?text='
         # https://api.funtranslations.com/translate/yoda.json?text=Master%20Obiwan%20has%20lost%20a%20planet.
         qstr = quote(strn)
