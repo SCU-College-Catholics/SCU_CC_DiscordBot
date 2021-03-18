@@ -8,6 +8,7 @@ import json
 import time
 from dotenv import load_dotenv
 from datetime import date
+from urllib.parse import quote 
 
 load_dotenv('.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -74,21 +75,7 @@ async def on_message(message):
                     msg = 'Sent ' + own.name + ' to purgatory. Purgatory go brr!'
                     await message.channel.send(msg)
     
-    if '-dadjoke' in message.content.lower() or '-dad joke' in message.content.lower():
-        # This api is not reliable at all
-        # https://us-central1-dadsofunny.cloudfunctions.net/DadJokes/random/jokes
-        url = 'https://us-central1-dadsofunny.cloudfunctions.net/DadJokes/random/jokes'
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
-        response = requests.get(url, timeout = 2, headers=headers)
-        print(response.status_code)
-        if response.status_code == 429:
-            await message.channel.last_message.delete()
-        print(response.headers)
-        print(response.text)
-        data = response.json()
-        await message.channel.send(data["setup"])
-        await message.channel.send(data["punchline"])
-    
+
     if '-joke' in message.content.lower():
         url = 'https://v2.jokeapi.dev/joke/Miscellaneous,Pun?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&safe-mode'
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
@@ -107,6 +94,42 @@ async def on_message(message):
             await message.channel.send(data["setup"])
             time.sleep(2)
             await message.channel.send(data["delivery"])
+
+    if '-yoda' in message.content.lower():
+        strn = message.content[6:]
+        url = 'https://api.funtranslations.com/translate/yoda.json?text='
+        # https://api.funtranslations.com/translate/yoda.json?text=Master%20Obiwan%20has%20lost%20a%20planet.
+        qstr = quote(strn)
+
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response = requests.get(url + qstr, timeout=2, headers=headers)
+        if response.status_code != 200:
+            print(response.status_code)
+            print(response.headers)
+            # await message.channel.last_message.delete()
+            return
+        
+        data = response.json()
+        
+        await message.channel.send(data["contents"]["translated"])
+    if '-gungan' in message.content.lower() or '-jarjar' in message.content.lower():
+        strn = message.content[6:]
+        url = 'https://api.funtranslations.com/translate/gungan.json?text='
+        # https://api.funtranslations.com/translate/yoda.json?text=Master%20Obiwan%20has%20lost%20a%20planet.
+        qstr = quote(strn)
+
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response = requests.get(url + qstr, timeout=2, headers=headers)
+        if response.status_code != 200:
+            print(response.status_code)
+            print(response.headers)
+            # await message.channel.last_message.delete()
+            return
+        
+        data = response.json()
+        
+        await message.channel.send(data["contents"]["translated"])
+
 
         
 
