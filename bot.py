@@ -161,26 +161,56 @@ async def on_message(message):
         await message.channel.send('Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It\'s not a story the Jedi would tell you. It\'s a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It\'s ironic he could save others from death, but not himself.')
 
     if '-gospel' in message.content.lower():
+        #TODO: Clean this code up
         today = date.today()
         d = today.strftime("%m%d%y")
+        isSunday = False
 
-        url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
+        # If today is sunday, we need to specift the year cycle in the url
+        if (today.strftime("%A") == 'Sunday'):
+            isSunday = True
+            d += '-YearB'
+        # url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
+        url = 'https://bible.usccb.org/bible/readings/032121-YearB.cfm'
         print(url)
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         pageContent=requests.get(url, timeout=2, headers=headers)
         tree = html.fromstring(pageContent.content)
 
-        gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[8]/div/div/div/div/div[1]/div/a/text()')[0]
+        secondReading = False # if there is a 2nd reading we need to adjust the xpath (index 9 instead of 8 in the 2nd div)
+        if tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[8]/div/div/div/div/div[1]/div/a/text()'):
+            gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[8]/div/div/div/div/div[1]/div/a/text()')[0]
+        else:
+            # In case there are more readings
+            gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[9]/div/div/div/div/div[1]/div/a/text()')[0]
+            secondReading = True
+
+        # When there is a second reading the normal place for the gospel holds the psalm
+        if gospelVerse[:2] == 'Ps':
+            # In case there are more readings
+            gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[9]/div/div/div/div/div[1]/div/a/text()')[0]
+            secondReading = True
+        elif isSunday:
+            #//*[@id="block-usccb-readings-content"]/div/div[10]/div/div/div/div/div[1]/div/a
+            gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[10]/div/div/div/div/div[1]/div/a/text()')[0]
+            
         gospelString = ''
         i = 1
         while i:
-            gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[8]/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            if secondReading == False and not isSunday:
+                gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[8]/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            elif secondReading == True:
+                gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[9]/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            else:
+                gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[10]/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+
             if (gospelPar == False or gospelPar == []):
                 i = 0
                 break
             for g in gospelPar:
+                if g == 'OR:':
+                    break
                 gospelString += g
-                # print(g)
             gospelString += "\n\n"
             i += 1
 
