@@ -9,6 +9,9 @@ import time
 from dotenv import load_dotenv
 from datetime import date
 from urllib.parse import quote 
+from urllib.request import urlopen
+import re
+from lxml import html
 
 load_dotenv('.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -60,12 +63,14 @@ async def on_message(message):
 
     if '-purgatory' in message.content.lower():
         vcs = message.guild.voice_channels
-        nm = message.content[11:]
+        nm = message.content[11:] # Get the user name parameter if it exists
         own = message.guild.get_member_named(nm)
         if own == None or own.name == 'kfenole' or own.name == 'The Mexican One':
             own = message.author
+            # Reduntant, but we don't want to send this message if the victim isn't connected to voice
             if (own.voice.channel):
                 await message.channel.send('I can\'t send that person to purgatory, but I can send you!')
+        # If target isn't connected to voice, exit
         if (own.voice.channel == False):
             return
         for vc in vcs:
@@ -86,8 +91,10 @@ async def on_message(message):
             return
         data = response.json()
         print(data["safe"])
+        # if for some reason an insensitive joke is received,exit before sending
         if (data["safe"] == False):
             return
+        # Either send the 1 line or 2 line joke
         if (data["type"] == "single"):
             await message.channel.send(data["joke"])
         else:
@@ -96,7 +103,7 @@ async def on_message(message):
             await message.channel.send(data["delivery"])
 
     if '-yoda' in message.content.lower():
-        strn = message.content[6:]
+        strn = message.content[6:] #trim the string to just include the message
         url = 'https://api.funtranslations.com/translate/yoda.json?text='
         # https://api.funtranslations.com/translate/yoda.json?text=Master%20Obiwan%20has%20lost%20a%20planet.
         qstr = quote(strn)
@@ -113,7 +120,7 @@ async def on_message(message):
         
         await message.channel.send(data["contents"]["translated"])
     if '-gungan' in message.content.lower() or '-jarjar' in message.content.lower():
-        strn = message.content[8:]
+        strn = message.content[8:] # trim to just inlcude message
         url = 'https://api.funtranslations.com/translate/gungan.json?text='
         # https://api.funtranslations.com/translate/yoda.json?text=Master%20Obiwan%20has%20lost%20a%20planet.
         qstr = quote(strn)
@@ -139,8 +146,35 @@ async def on_message(message):
         
         data = response.json()
         await message.channel.send('Here\'s an affirmation to lift your spirits: **' + data["affirmation"] + '**')
+    
+    if 'tragedy' in message.content.lower() or 'sith' in message.content.lower() or 'plageuis' in message.content.lower() or 'darth' in message.content.lower():
+        await message.channel.send('Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It\'s not a story the Jedi would tell you. It\'s a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It\'s ironic he could save others from death, but not himself.')
 
-        
+    if '-gospel' in message.content.lower():
+        today = date.today()
+        d = today.strftime("%m%d%y")
+
+        url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
+        print(url)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        pageContent=requests.get(url, timeout=2, headers=headers)
+        tree = html.fromstring(pageContent.content)
+
+        gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[8]/div/div/div/div/div[1]/div/a/text()')[0]
+        gospelString = ''
+        i = 1
+        while i:
+            gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[8]/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            if (gospelPar == False or gospelPar == []):
+                i = 0
+                break
+            for g in gospelPar:
+                gospelString += g
+                # print(g)
+            gospelString += "\n\n"
+            i += 1
+
+        await message.channel.send('**' + today.strftime("%A %B %-d, %Y") + ' | ' + gospelVerse + '**\n' + gospelString)
 
 
 client.run(TOKEN)
