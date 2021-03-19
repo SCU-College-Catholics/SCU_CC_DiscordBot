@@ -36,6 +36,16 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    if '-commands' in message.content.lower():
+        commandsStr = '**SCU College Catholics Bot Commands:**\n'
+        commandsStr += '**-sod**: Sends information on today\'s liturgical celebration as well as feast days, etc.\n'
+        commandsStr += '**-gospel**: Sends today\'s gospel\n'
+        commandsStr += '**-joke**: Sends a hillarious pun or joke\n'
+        commandsStr += '**-yoda** & **-jarjar**: Translates the sentence after "-yoda " (or "-jarjar") into yoda (or gungan) speak. (limited to about 5x per hour)\n' 
+        commandsStr += '**keywords**: There are some (secret?) keywords the bot looks for and it may respond with a message accordingly.\n'
+        commandsStr += 'LMK if there are any new features you\'d like to see! View my source at Github: https://github.com/SCU-College-Catholics/SCU_CC_DiscordBot'
+        await message.channel.send(commandsStr)
+
     if 'happy birthday' in message.content.lower():
         await message.channel.send('Happy Birthday! 🎈🎉')
 
