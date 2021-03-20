@@ -44,6 +44,7 @@ async def on_message(message):
         commandsStr += '**-gospel**: Sends today\'s gospel\n'
         commandsStr += '**-joke**: Sends a hillarious pun or joke\n'
         commandsStr += '**-yoda** & **-jarjar**: Translates the sentence after "-yoda " (or "-jarjar") into yoda (or gungan) speak. (limited to about 5x per hour)\n' 
+        commandsStr += '**-final fantasy** & **-pokemon** & **-star wars**: Sends a random ff, pokemon, or star wars character respectively. Shorthand -ff, -poke, -sw.\n' 
         commandsStr += '**keywords**: There are some (secret?) keywords the bot looks for and it may respond with a message accordingly.\n'
         commandsStr += 'LMK if there are any new features you\'d like to see! View my source at Github: https://github.com/SCU-College-Catholics/SCU_CC_DiscordBot'
         await message.channel.send(commandsStr)
@@ -165,7 +166,7 @@ async def on_message(message):
     if 'minecraft' in message.content.lower() or '-ip' in message.content.lower():
         await message.channel.send('Our Minecraft Server (Java, MC 1.15.2): **142.44.222.25:25726**')
 
-    if 'final fantasy' in message.content.lower():
+    if '-final fantasy' in message.content.lower() or '-ff' in message.content.lower():
         url = "https://www.moogleapi.com/api/v1/characters/random"
 
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
@@ -180,7 +181,48 @@ async def on_message(message):
         # await message.channel.send("https://mooglestorage.blob.core.windows.net/images/7230498b-51b2-4eff-8040-74911933c342.jpg")
         await message.channel.send(strng)
 
-    if 'pokemon' in message.content.lower():
+    if '-star wars' in message.content.lower() or '-sw' in message.content.lower():
+        random.seed(datetime.now())
+        r = random.randint(1, 82)
+        url = "https://swapi.dev/api/people/" + str(r) + "/"
+        print(url)
+        # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response=requests.get(url, timeout=2)
+        data = response.json()
+        print(data)
+        # Get the home planet
+        url = data['homeworld']
+        response=requests.get(url, timeout=2)
+        data2 = response.json()
+        # Get the first film
+        url = data['films'][0]
+        response=requests.get(url, timeout=2)
+        data3 = response.json()
+        # Get the image
+        name = data['name']
+        url = 'https://www.bing.com/images/search?q=' + name.lower().replace(' ', '_') + '&form=HDRSC2&first=1&tsc=ImageBasicHover'
+        print(url)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        pageContent=requests.get(url, timeout=2, headers=headers)
+        tree = html.fromstring(pageContent.content)
+
+        p = tree.xpath('//*[@id="mmComponent_images_2"]/ul[1]/li[1]/div/div/a/div/img/@src')
+        if (p):
+            print(p[0])
+            await message.channel.send(p[0])
+        else:
+            print('error')
+
+
+        strng = '**' + name + '**\n'
+        strng += 'Birth Year: ' + data['birth_year'] + ' | homeworld: ' + data2['name'] + ' | 1st movie: ' + data3['title'] + '\n'
+        # if (data['description']):
+        #     strng += data['description']
+        
+        # await message.channel.send("https://mooglestorage.blob.core.windows.net/images/7230498b-51b2-4eff-8040-74911933c342.jpg")
+        await message.channel.send(strng)
+
+    if '-pokemon' in message.content.lower() or '-poke' in message.content.lower():
         random.seed(datetime.now())
         r = random.randint(1, 893)
         url = 'https://pokeapi.co/api/v2/pokemon/' + str(r)
