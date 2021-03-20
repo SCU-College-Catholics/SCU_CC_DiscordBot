@@ -8,10 +8,12 @@ import json
 import time
 from dotenv import load_dotenv
 from datetime import date
+from datetime import datetime
 from urllib.parse import quote 
 from urllib.request import urlopen
 import re
 from lxml import html
+import random
 
 load_dotenv('.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -159,6 +161,44 @@ async def on_message(message):
     
     if 'tragedy' in message.content.lower() or 'sith' in message.content.lower() or 'plageuis' in message.content.lower() or 'darth' in message.content.lower():
         await message.channel.send('Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It\'s not a story the Jedi would tell you. It\'s a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It\'s ironic he could save others from death, but not himself.')
+
+    if 'minecraft' in message.content.lower() or '-ip' in message.content.lower():
+        await message.channel.send('Our Minecraft Server (Java, MC 1.15.2): **142.44.222.25:25726**')
+
+    if 'final fantasy' in message.content.lower():
+        url = "https://www.moogleapi.com/api/v1/characters/random"
+
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response=requests.get(url, timeout=2, headers=headers)
+        data = response.json()
+        print(data)
+        strng = '**' + data['name'] + '**\n'
+        strng += 'Age: ' + data['age'] + ' | job: ' + data['job'] + ' | game: ' + data['origin'] + '\n'
+        if (data['description']):
+            strng += data['description']
+        await message.channel.send(data['pictures'][0]['url'])
+        # await message.channel.send("https://mooglestorage.blob.core.windows.net/images/7230498b-51b2-4eff-8040-74911933c342.jpg")
+        await message.channel.send(strng)
+
+    if 'pokemon' in message.content.lower():
+        random.seed(datetime.now())
+        r = random.randint(1, 893)
+        url = 'https://pokeapi.co/api/v2/pokemon/' + str(r)
+        print(url)
+
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        response=requests.get(url, timeout=2, headers=headers)
+        data = response.json()
+        print(data)
+
+        strng = '**' + data['name'] + '**\n'
+        strng += 'Type: '
+        for t in data['types']:
+            strng += t['type']['name'] + ' '
+        await message.channel.send(data['sprites']['front_default'])
+        await message.channel.send(strng)
+
+
 
     if '-gospel' in message.content.lower():
         #TODO: Clean this code up
