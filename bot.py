@@ -68,6 +68,7 @@ async def on_message(message):
     if '-commands' in message.content.lower():
         commandsStr = '**SCU College Catholics Bot Commands:**\n'
         commandsStr += '**-sod**: Sends information on today\'s liturgical celebration as well as feast days, etc.\n'
+        commandsStr += '**-first**: Sends today\'s first reading\n'
         commandsStr += '**-gospel**: Sends today\'s gospel\n'
         commandsStr += '**-joke**: Sends a hillarious pun or joke\n'
         commandsStr += '**-yoda** & **-jarjar**: Translates the sentence after "-yoda " (or "-jarjar") into yoda (or gungan) speak. (limited to about 5x per hour)\n' 
