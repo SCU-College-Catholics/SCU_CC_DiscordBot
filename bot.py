@@ -19,6 +19,33 @@ load_dotenv('.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
+
+# Returns the first image result from Bing
+def getFirstImageResultFor(name, i):
+    if i > 3:
+        return
+    if i == 2:
+        name = name[0] + name[2:]
+    elif i == 3:
+        name = name + ' pictures'
+    # Get the image
+    url = 'https://www.bing.com/images/search?q=' + name.lower().replace(' ', '_') + '&form=HDRSC2&first=1&tsc=ImageBasicHover'
+    print(url)
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+    pageContent=requests.get(url, timeout=2, headers=headers)
+    tree = html.fromstring(pageContent.content)
+    p = tree.xpath('//*[@id="mmComponent_images_2"]/ul[1]/li[1]/div/div/a/div/img/@src')
+    if (p):
+        # print(p[0])
+        if ('data:' in p[0]):
+            return getFirstImageResultFor(name, i+1)
+        else:
+            return p[0]
+        # await message.channel.send(p[0])
+    else:
+        print('error')
+
+
 client = discord.Client()
 
 @client.event
@@ -177,7 +204,8 @@ async def on_message(message):
         strng += 'Age: ' + data['age'] + ' | job: ' + data['job'] + ' | game: ' + data['origin'] + '\n'
         if (data['description']):
             strng += data['description']
-        await message.channel.send(data['pictures'][0]['url'])
+        if (data['pictures']):
+            await message.channel.send(data['pictures'][0]['url'])
         # await message.channel.send("https://mooglestorage.blob.core.windows.net/images/7230498b-51b2-4eff-8040-74911933c342.jpg")
         await message.channel.send(strng)
 
@@ -200,18 +228,8 @@ async def on_message(message):
         data3 = response.json()
         # Get the image
         name = data['name']
-        url = 'https://www.bing.com/images/search?q=' + name.lower().replace(' ', '_') + '&form=HDRSC2&first=1&tsc=ImageBasicHover'
-        print(url)
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
-        pageContent=requests.get(url, timeout=2, headers=headers)
-        tree = html.fromstring(pageContent.content)
-
-        p = tree.xpath('//*[@id="mmComponent_images_2"]/ul[1]/li[1]/div/div/a/div/img/@src')
-        if (p):
-            print(p[0])
-            await message.channel.send(p[0])
-        else:
-            print('error')
+        
+        await message.channel.send(getFirstImageResultFor(name + ' star wars', 1))
 
 
         strng = '**' + name + '**\n'
