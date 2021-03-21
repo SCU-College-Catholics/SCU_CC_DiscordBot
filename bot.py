@@ -261,7 +261,6 @@ async def on_message(message):
 
 
     if '-gospel' in message.content.lower():
-        #TODO: Clean this code up
         today = date.today()
         d = today.strftime("%m%d%y")
         isSunday = False
@@ -315,5 +314,54 @@ async def on_message(message):
 
         await message.channel.send('**' + today.strftime("%A %B %-d, %Y") + ' | ' + gospelVerse + '**\n' + gospelString)
 
+
+    if '-reading1' in message.content.lower() or '-1st' in message.content.lower() or '-first' in message.content.lower():
+        today = date.today()
+        d = today.strftime("%m%d%y")
+        isSunday = False
+
+        # If today is sunday, we need to specify the year cycle in the url
+        if (today.strftime("%A") == 'Sunday'):
+            isSunday = True
+            d += '-YearB'
+        url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
+
+        print(url)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
+        pageContent=requests.get(url, timeout=2, headers=headers)
+        tree = html.fromstring(pageContent.content)
+
+        secondReading = False # if there is a 2nd reading we need to adjust the xpath (index 9 instead of 8 in the 2nd div)
+        if tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[5]/div/div/div/div/div[1]/div/a/text()'):
+            firstVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[5]/div/div/div/div/div[1]/div/a/text()')[0]
+        else:
+            # In case there are more readings
+            firstVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[6]/div/div/div/div/div[1]/div/a/text()')[0]
+            secondReading = True
+
+        # When there is a second reading the normal place for the gospel holds the psalm
+        if firstVerse[:2] == 'Ps' or isSunday:
+            # In case there are more readings
+            firstVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[6]/div/div/div/div/div[1]/div/a/text()')[0]
+            
+        firstString = ''
+        i = 1
+        while i:
+            if secondReading == False and not isSunday:
+                firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[5]/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            else:
+                firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[6]/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+
+            if (firstPar == False or firstPar == []):
+                i = 0
+                break
+            for f in firstPar:
+                if f == 'OR:':
+                    break
+                firstString += f
+            firstPar += "\n\n"
+            i += 1
+
+        await message.channel.send('**' + today.strftime("%A %B %-d, %Y") + ' | ' + firstVerse + '**\n' + firstString)
 
 client.run(TOKEN)
