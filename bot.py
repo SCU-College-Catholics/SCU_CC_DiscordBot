@@ -14,6 +14,7 @@ from urllib.request import urlopen
 import re
 from lxml import html
 import random
+import math
 
 load_dotenv('.env')
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -312,8 +313,12 @@ async def on_message(message):
                 gospelString += g
             gospelString += "\n\n"
             i += 1
-
-        await message.channel.send('**' + today.strftime("%A %B %-d, %Y") + ' | ' + gospelVerse + '**\n' + gospelString)
+        
+        msg = '**' + today.strftime("%A %B %-d, %Y") + ' | ' + gospelVerse + '**\n' + gospelString
+        n = math.ceil(len(msg) / 2000)
+        for i in range(0,n):
+            await message.channel.send(msg[i*2000 : (i + 1) * 2000])
+        # await message.channel.send('**' + today.strftime("%A %B %-d, %Y") + ' | ' + gospelVerse + '**\n' + gospelString)
 
 
     if '-reading1' in message.content.lower() or '-1st' in message.content.lower() or '-first' in message.content.lower():
@@ -363,6 +368,11 @@ async def on_message(message):
             firstPar += "\n\n"
             i += 1
 
-        await message.channel.send('**' + today.strftime("%A %B %-d, %Y") + ' | ' + firstVerse + '**\n' + firstString)
+        # TODO: Optimize this so that it doesn't split in between words 
+        msg = '**' + today.strftime("%A %B %-d, %Y") + ' | ' + firstVerse + '**\n' + firstString
+        n = math.ceil(len(msg) / 2000)
+        for i in range(0,n):
+            await message.channel.send(msg[i*2000 : (i + 1) * 2000])
+        # await message.channel.send('**' + today.strftime("%A %B %-d, %Y") + ' | ' + firstVerse + '**\n' + firstString)
 
 client.run(TOKEN)
