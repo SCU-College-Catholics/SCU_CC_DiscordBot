@@ -415,6 +415,115 @@ async def on_message(message):
             n = math.ceil(len(msg) / 2000)
             for i in range(0,n):
                 await message.channel.send(msg[i*2000 : (i + 1) * 2000])
+    
+    if '-rosary' in message.content.lower():
+        today = date.today()
+        d = today.strftime("%A")
+        advent = False
+        lent = True
+        msg = ''
+        if (d == 'Monday' or d == 'Saturday' or (advent and d == 'Sunday')):
+            msg += 'The Joyful Mysteries\n'
+            msg += '1. The Annunciation\n'
+            msg += '2. The Visitation\n'
+            msg += '3. The Nativity\n'
+            msg += '4. The Presentation in the Temple\n'
+            msg += '5. The Finding in the Temple'
+        elif (d == 'Tuesday' or d == 'Friday' or (lent and d == 'Sunday')):
+            msg += 'The Sorrowful Mysteries\n'
+            msg += '1. The Agony in the Garden\n'
+            msg += '2. The Scourging at the Pillar\n'
+            msg += '3. The Crowning with Thorns\n'
+            msg += '4. The Carrying of the Cross\n'
+            msg += '5. The Crucifixion and Death'
+        elif (d == 'Wednesday' or (not lent and not advent and d == 'Sunday')):
+            msg += 'The Glorious Mysteries\n'
+            msg += '1. The Resurrection\n'
+            msg += '2. The Ascension\n'
+            msg += '3. The Descent of the Holy Spirit\n'
+            msg += '4. The Assumption\n'
+            msg += '5. The Coronation of Mary'
+        else:
+            msg += 'The Luminous Mysteries\n'
+            msg += '1. The Baptism of Christ in the Jordan\n'
+            msg += '2. The Wedding Feast at Cana\n'
+            msg += '3. Jesus\' Proclamation of the Coming of the Kingdom of God\n'
+            msg += '4. The Transfiguration\n'
+            msg += '5. The Institution of the Eucharist'
+        
+        await message.channel.send(msg)
 
+        if 'prayer' in message.content.lower():
+            p=''
+            p+="**The Apostles Creed**\n"
+            p+="I believe in God,\n"
+            p+="the Father almighty,\n"
+            p+="Creator of heaven and earth,\n"
+            p+="and in Jesus Christ, his only Son, our Lord,\n"
+            p+="who was conceived by the Holy Spirit,\n"
+            p+="born of the Virgin Mary,\n"
+            p+="suffered under Pontius Pilate,\n"
+            p+="was crucified, died and was buried;\n"
+            p+="he descended into hell;\n"
+            p+="on the third day he rose again from the dead;\n"
+            p+="he ascended into heaven,\n"
+            p+="and is seated at the right hand of God the Father almighty;\n"
+            p+="from there he will come to judge the living and the dead.\n"
+            p+="I believe in the Holy Spirit,\n"
+            p+="the holy catholic Church,\n"
+            p+="the communion of saints,\n"
+            p+="the forgiveness of sins,\n"
+            p+="the resurrection of the body,\n"
+            p+="and life everlasting.\n"
+            p+="Amen."
+            await message.channel.send(p)
 
+            p = ''
+            p+= '**The Our Father**\n'
+            p+="Our Father, who art in heaven,\n"
+            p+="hallowed be thy name;\n"
+            p+="thy kingdom come;\n"
+            p+="thy will be done on earth as it is in heaven.\n"
+            p+="Give us this day our daily bread;\n"
+            p+="and forgive us our trespasses\n"
+            p+="as we forgive those who trespass\n"
+            p+="against us;\n"
+            p+="and lead us not into temptation,\n"
+            p+="but deliver us from evil.\n"
+            p+="Amen"
+            await message.channel.send(p)
+
+            p = ''
+            p+= '**The Hail Mary**\n'
+            p+="Hail Mary, full of grace, the Lord is with you;\n"
+            p+="blessed are you among women,\n"
+            p+="and blessed is the fruit of your womb, Jesus.\n"
+            p+="Holy Mary, Mother of God,\n"
+            p+="pray for us sinners\n"
+            p+="now and at the hour of our death.\n"
+            p+="Amen."
+            await message.channel.send(p)
+
+            p = ''
+            p+= '**The Glory Be**\n'
+            p+="Glory be to the Father, the Son, and the Holy Spirit;\n"
+            p+="as it was in the beginning, is now, and ever shall be,\n"
+            p+="world without end.\n"
+            p+="Amen."
+            await message.channel.send(p)
+
+            p = ''
+            p+= '**The Hail Holy Queen**\n'
+            p+="Hail, holy Queen, mother of mercy,\n"
+            p+="our life, our sweetness, and our hope.\n"
+            p+="To you we cry, poor banished children of Eve;\n"
+            p+="to you we send up our sighs,\n"
+            p+="mourning and weeping in this valley of tears.\n"
+            p+="Turn, then, most gracious advocate,\n"
+            p+="your eyes of mercy toward us;\n"
+            p+="and after this, our exile,\n"
+            p+="show unto us the blessed fruit of your womb, Jesus.\n"
+            p+="O clement, O loving, O sweet Virgin Mary."
+            await message.channel.send(p)
+              
 client.run(TOKEN)
