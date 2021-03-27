@@ -96,8 +96,8 @@ async def on_message(message):
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         response = requests.get(url, timeout = 1, headers=headers)
 
-        print('Got response' + response.status_code)
-        print(response.text)
+        # print('Got response' + response.status_code)
+        # print(response.text)
 
         data = response.json()
         celebrations = data["celebrations"]
@@ -211,7 +211,7 @@ async def on_message(message):
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         response=requests.get(url, timeout=2, headers=headers)
         data = response.json()
-        print('Sending this ff character: ' + data)
+        print('Sending an ff character')
         strng = '**' + data['name'] + '**\n'
         strng += 'Age: ' + data['age'] + ' | job: ' + data['job'] + ' | game: ' + data['origin'] + '\n'
         if (data['description']):
@@ -289,7 +289,7 @@ async def on_message(message):
 
         for n in range(7, 12):
             path = '//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/h3/text()'
-            print(path)
+
             # Make sure the data is valid and that this is the gospel section
             if tree.xpath(path):
                 if 'Gospel' == tree.xpath(path)[0]:
@@ -340,7 +340,7 @@ async def on_message(message):
 
         for n in range(4, 8):
             path = '//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/h3/text()'
-            print(path)
+
             # Make sure the data is valid and that this is the gospel section
             if tree.xpath(path):
                 if 'Reading I' == tree.xpath(path)[0]:
@@ -390,7 +390,7 @@ async def on_message(message):
 
             for n in range(3, 11):
                 path = '//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/h3/text()'
-                print(path)
+
                 # Make sure the data is valid and that this is the gospel section
                 if tree.xpath(path):
                     if 'Reading II' == tree.xpath(path)[0]:
@@ -441,21 +441,21 @@ async def on_message(message):
             msg += '4. The Presentation in the Temple\n'
             msg += '5. The Finding in the Temple'
         elif (d == 'Tuesday' or d == 'Friday' or (lent and d == 'Sunday')):
-            msg += '**The Sorrowful Mysteries (' + d + ')**\n'
+            msg += '**The Sorrowful Mysteries** (' + d + ')\n'
             msg += '1. The Agony in the Garden\n'
             msg += '2. The Scourging at the Pillar\n'
             msg += '3. The Crowning with Thorns\n'
             msg += '4. The Carrying of the Cross\n'
             msg += '5. The Crucifixion and Death'
         elif (d == 'Wednesday' or (not lent and not advent and d == 'Sunday')):
-            msg += '**The Glorious Mysteries (' + d + ')**\n'
+            msg += '**The Glorious Mysteries** (' + d + ')\n'
             msg += '1. The Resurrection\n'
             msg += '2. The Ascension\n'
             msg += '3. The Descent of the Holy Spirit\n'
             msg += '4. The Assumption\n'
             msg += '5. The Coronation of Mary'
         else:
-            msg += '**The Luminous Mysteries (' + d + ')**\n'
+            msg += '**The Luminous Mysteries** (' + d + ')\n'
             msg += '1. The Baptism of Christ in the Jordan\n'
             msg += '2. The Wedding Feast at Cana\n'
             msg += '3. Jesus\' Proclamation of the Coming of the Kingdom of God\n'
