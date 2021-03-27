@@ -31,27 +31,25 @@ def getFirstImageResultFor(name, i):
         name = name + ' pictures'
     # Get the image
     url = 'https://www.bing.com/images/search?q=' + name.lower().replace(' ', '_') + '&form=HDRSC2&first=1&tsc=ImageBasicHover'
-    print(url)
+    print('Getting image from: ' + url)
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
     pageContent=requests.get(url, timeout=2, headers=headers)
     tree = html.fromstring(pageContent.content)
     p = tree.xpath('//*[@id="mmComponent_images_2"]/ul[1]/li[1]/div/div/a/div/img/@src')
     if (p):
-        # print(p[0])
         if ('data:' in p[0]):
             return getFirstImageResultFor(name, i+1)
         else:
             return p[0]
-        # await message.channel.send(p[0])
+
     else:
-        print('error')
+        print('error getting image')
 
 
 client = discord.Client()
 
 @client.event
 async def on_ready():
-    # print(f'{client.user} has connected to Discord!')
     for guild in client.guilds:
         if guild.name == GUILD:
             print(guild.name)
@@ -67,7 +65,8 @@ async def on_message(message):
         return
 
     if '-commands' in message.content.lower():
-        commandsStr = '**SCU College Catholics Bot Commands:**\n'
+        print('Sending Commands List')
+        commandsStr = '**SCU College Catholics Bot Commands:** (Last Updated: 3/26/21)\n'
         commandsStr += '**-sod**: Sends information on today\'s liturgical celebration as well as feast days, etc.\n'
         commandsStr += '**-first**: Sends today\'s first reading\n'
         commandsStr += '**-second**: Sends today\'s second reading (if there is one)\n'
@@ -81,6 +80,7 @@ async def on_message(message):
         await message.channel.send(commandsStr)
 
     if 'happy birthday' in message.content.lower():
+        print('Sending birthay wishes!')
         await message.channel.send('Happy Birthday! 🎈🎉')
 
     if '-sod' in message.content.lower():
@@ -92,11 +92,11 @@ async def on_message(message):
         url = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/' + d
         # url = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/2021/03/16'
 
-        print(url)
+        print('Getting Today\'s celebrations from: ' + url)
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         response = requests.get(url, timeout = 1, headers=headers)
 
-        print(response.status_code)
+        print('Got response' + response.status_code)
         print(response.text)
 
         data = response.json()
@@ -117,6 +117,7 @@ async def on_message(message):
         # If target isn't connected to voice, exit
         if (own.voice.channel == False):
             return
+        print('Sending ' + own.name + ' to Purgatory')
         for vc in vcs:
             if vc.name == 'Purgatory':
                 await own.move_to(vc)
@@ -134,10 +135,12 @@ async def on_message(message):
             await message.channel.last_message.delete()
             return
         data = response.json()
-        print(data["safe"])
         # if for some reason an insensitive joke is received,exit before sending
         if (data["safe"] == False):
             return
+
+        print('Sending a joke')
+
         # Either send the 1 line or 2 line joke
         if (data["type"] == "single"):
             await message.channel.send(data["joke"])
@@ -147,6 +150,7 @@ async def on_message(message):
             await message.channel.send(data["delivery"])
 
     if '-yoda' in message.content.lower():
+        print('Doing yoda translation')
         strn = message.content[6:] #trim the string to just include the message
         url = 'https://api.funtranslations.com/translate/yoda.json?text='
         # https://api.funtranslations.com/translate/yoda.json?text=Master%20Obiwan%20has%20lost%20a%20planet.
@@ -164,6 +168,7 @@ async def on_message(message):
         
         await message.channel.send(data["contents"]["translated"])
     if '-gungan' in message.content.lower() or '-jarjar' in message.content.lower():
+        print('Doing jar jar translation')
         strn = message.content[8:] # trim to just inlcude message
         url = 'https://api.funtranslations.com/translate/gungan.json?text='
         # https://api.funtranslations.com/translate/yoda.json?text=Master%20Obiwan%20has%20lost%20a%20planet.
@@ -182,6 +187,7 @@ async def on_message(message):
         await message.channel.send(data["contents"]["translated"])
 
     if 'depress' in message.content.lower() or 'affirmation' in message.content.lower() or 'sad' in message.content.lower():
+        print('Sending an affirmation')
         response = requests.get('https://www.affirmations.dev')
         if response.status_code != 200:
             print(response.status_code)
@@ -192,9 +198,11 @@ async def on_message(message):
         await message.channel.send('Here\'s an affirmation to lift your spirits: **' + data["affirmation"] + '**')
     
     if 'tragedy' in message.content.lower() or 'sith' in message.content.lower() or 'plageuis' in message.content.lower() or 'darth' in message.content.lower():
+        print('Sending the tragedy')
         await message.channel.send('Did you ever hear the Tragedy of Darth Plagueis the wise? I thought not. It\'s not a story the Jedi would tell you. It\'s a Sith legend. Darth Plagueis was a Dark Lord of the Sith, so powerful and so wise he could use the Force to influence the midichlorians to create life... He had such a knowledge of the dark side that he could even keep the ones he cared about from dying. The dark side of the Force is a pathway to many abilities some consider to be unnatural. He became so powerful... the only thing he was afraid of was losing his power, which eventually, of course, he did. Unfortunately, he taught his apprentice everything he knew, then his apprentice killed him in his sleep. It\'s ironic he could save others from death, but not himself.')
 
     if 'minecraft' in message.content.lower() or '-ip' in message.content.lower():
+        print('Sending the minecraft info')
         await message.channel.send('Our Minecraft Server (Java, MC 1.15.2): **142.44.222.25:25726**')
 
     if '-final fantasy' in message.content.lower() or '-ff' in message.content.lower():
@@ -203,7 +211,7 @@ async def on_message(message):
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         response=requests.get(url, timeout=2, headers=headers)
         data = response.json()
-        print(data)
+        print('Sending this ff character: ' + data)
         strng = '**' + data['name'] + '**\n'
         strng += 'Age: ' + data['age'] + ' | job: ' + data['job'] + ' | game: ' + data['origin'] + '\n'
         if (data['description']):
@@ -217,11 +225,11 @@ async def on_message(message):
         random.seed(datetime.now())
         r = random.randint(1, 82)
         url = "https://swapi.dev/api/people/" + str(r) + "/"
-        print(url)
+        print('Sending a SW char:' + url)
         # headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         response=requests.get(url, timeout=2)
         data = response.json()
-        print(data)
+        # print(data)
         # Get the home planet
         url = data['homeworld']
         response=requests.get(url, timeout=2)
@@ -248,12 +256,12 @@ async def on_message(message):
         random.seed(datetime.now())
         r = random.randint(1, 893)
         url = 'https://pokeapi.co/api/v2/pokemon/' + str(r)
-        print(url)
+        print('Sending this pokemon: ' + url)
 
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         response=requests.get(url, timeout=2, headers=headers)
         data = response.json()
-        print(data)
+        # print(data)
 
         strng = '**' + data['name'] + '**\n'
         strng += 'Type: '
@@ -419,34 +427,35 @@ async def on_message(message):
                 await message.channel.send(msg[i*2000 : (i + 1) * 2000])
     
     if '-rosary' in message.content.lower():
+        print('Sending the rosary')
         today = date.today()
         d = today.strftime("%A")
         advent = False
         lent = True
         msg = ''
         if (d == 'Monday' or d == 'Saturday' or (advent and d == 'Sunday')):
-            msg += 'The Joyful Mysteries\n'
+            msg += '**The Joyful Mysteries** (' + d + ')\n'
             msg += '1. The Annunciation\n'
             msg += '2. The Visitation\n'
             msg += '3. The Nativity\n'
             msg += '4. The Presentation in the Temple\n'
             msg += '5. The Finding in the Temple'
         elif (d == 'Tuesday' or d == 'Friday' or (lent and d == 'Sunday')):
-            msg += 'The Sorrowful Mysteries\n'
+            msg += '**The Sorrowful Mysteries (' + d + ')**\n'
             msg += '1. The Agony in the Garden\n'
             msg += '2. The Scourging at the Pillar\n'
             msg += '3. The Crowning with Thorns\n'
             msg += '4. The Carrying of the Cross\n'
             msg += '5. The Crucifixion and Death'
         elif (d == 'Wednesday' or (not lent and not advent and d == 'Sunday')):
-            msg += 'The Glorious Mysteries\n'
+            msg += '**The Glorious Mysteries (' + d + ')**\n'
             msg += '1. The Resurrection\n'
             msg += '2. The Ascension\n'
             msg += '3. The Descent of the Holy Spirit\n'
             msg += '4. The Assumption\n'
             msg += '5. The Coronation of Mary'
         else:
-            msg += 'The Luminous Mysteries\n'
+            msg += '**The Luminous Mysteries (' + d + ')**\n'
             msg += '1. The Baptism of Christ in the Jordan\n'
             msg += '2. The Wedding Feast at Cana\n'
             msg += '3. Jesus\' Proclamation of the Coming of the Kingdom of God\n'
