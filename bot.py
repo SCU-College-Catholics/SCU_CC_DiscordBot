@@ -280,11 +280,17 @@ async def on_message(message):
         print(today.strftime("%A"))
         if (today.strftime("%A") == 'Sunday'):
             d += '-YearB'
+        elif (d = '040121'):
+            # Holy Thursday
+            d += '-Evening'
+
         url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
         print("Request: Gospel Reading: " + url)
 
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36', "Upgrade-Insecure-Requests": "1","DNT": "1","Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8","Accept-Language": "en-US,en;q=0.5","Accept-Encoding": "gzip, deflate"}
         pageContent=requests.get(url, timeout=2, headers=headers)
+        
+        # If the page doesnt load, try without the year
         if pageContent.status_code != 200:
             d = today.strftime("%m%d%y")
             url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
@@ -302,7 +308,7 @@ async def on_message(message):
         # Make sure that the data is valid
         if tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/div/a/text()'):
             gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/div/a/text()')[0]
-        
+
         # The actual Gospel passage
         gospelString = ''
         i = 1
@@ -333,6 +339,10 @@ async def on_message(message):
         print(today.strftime("%A"))
         if (today.strftime("%A") == 'Sunday'):
             d += '-YearB'
+        elif (d = '040121'):
+            # Holy Thursday
+            d += '-Evening'
+
         url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
         print("Request: 1st Reading: " + url)
 
@@ -387,6 +397,10 @@ async def on_message(message):
             print(today.strftime("%A"))
             if (today.strftime("%A") == 'Sunday'):
                 d += '-YearB'
+            elif (d = '040121'):
+                # Holy Thursday
+                d += '-Evening'
+
             url = 'https://bible.usccb.org/bible/readings/' + d + '.cfm'
 
             print("Request: 2nd Reading: " + url)
