@@ -280,7 +280,7 @@ async def on_message(message):
         print(today.strftime("%A"))
         if (today.strftime("%A") == 'Sunday'):
             d += '-YearB'
-        elif (d = '040121'):
+        elif (d == '040121'):
             # Holy Thursday
             d += '-Evening'
 
@@ -339,7 +339,7 @@ async def on_message(message):
         print(today.strftime("%A"))
         if (today.strftime("%A") == 'Sunday'):
             d += '-YearB'
-        elif (d = '040121'):
+        elif (d == '040121'):
             # Holy Thursday
             d += '-Evening'
 
@@ -397,7 +397,7 @@ async def on_message(message):
             print(today.strftime("%A"))
             if (today.strftime("%A") == 'Sunday'):
                 d += '-YearB'
-            elif (d = '040121'):
+            elif (d == '040121'):
                 # Holy Thursday
                 d += '-Evening'
 
