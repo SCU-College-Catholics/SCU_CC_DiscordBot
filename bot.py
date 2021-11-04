@@ -104,6 +104,9 @@ async def on_message(message):
         print(celebrations)
         for c in celebrations:
             await message.channel.send(c['rank'] + ': **' + c["title"] + '** with liturgical color ' + c["colour"])
+            if 'ferial' not in c["title"]:
+                await message.channel.send(getFirstImageResultFor(c["title"], 1))
+
 
     if '-purgatory' in message.content.lower():
         vcs = message.guild.voice_channels
