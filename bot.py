@@ -104,8 +104,6 @@ async def on_message(message):
         print(celebrations)
         for c in celebrations:
             await message.channel.send(c['rank'] + ': **' + c["title"] + '** with liturgical color ' + c["colour"])
-            if 'ferial' not in c["title"]:
-                await message.channel.send(getFirstImageResultFor(c["title"], 1))
 
 
     if '-purgatory' in message.content.lower():
@@ -302,6 +300,7 @@ async def on_message(message):
 
         for n in range(7, 12):
             path = '//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/h3/text()'
+            #path = '/html/body/div[1]/div/main/div/div/div/div[2]/div/div[8]/div/div/div/div/div[1]/h3/text()'
 
             # Make sure the data is valid and that this is the gospel section
             if tree.xpath(path):
@@ -311,12 +310,13 @@ async def on_message(message):
         # Make sure that the data is valid
         if tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/div/a/text()'):
             gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/div/a/text()')[0]
-
         # The actual Gospel passage
         gospelString = ''
         i = 1
         while i:
-            gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            #gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span/text()')
+
             if (gospelPar == False or gospelPar == []):
                 i = 0
                 break
@@ -326,9 +326,11 @@ async def on_message(message):
                 gospelString += g
             gospelString += "\n\n"
             i += 1
+            break
 
         # TODO: Optimize this so that it doesn't split in between words 
         msg = '**' + today.strftime("%A %B %-d, %Y") + ' | ' + gospelVerse + '**\n' + gospelString
+
         n = math.ceil(len(msg) / 2000)
         for i in range(0,n):
             await message.channel.send(msg[i*2000 : (i + 1) * 2000])
@@ -373,7 +375,8 @@ async def on_message(message):
         firstString = ''
         i = 1
         while i:
-            firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            #firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+            firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span/text()')
 
             if (firstPar == False or firstPar == []):
                 i = 0
@@ -384,6 +387,7 @@ async def on_message(message):
                 firstString += f
             firstString += "\n\n"
             i += 1
+            break
 
 
         # TODO: Optimize this so that it doesn't split in between words 
@@ -434,7 +438,8 @@ async def on_message(message):
             firstString = ''
             i = 1
             while i:
-                firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+                #firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
+                firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span/text()')
 
                 if (firstPar == False or firstPar == []):
                     i = 0
@@ -445,6 +450,7 @@ async def on_message(message):
                     firstString += f
                 firstString += "\n\n"
                 i += 1
+                break
 
 
             # TODO: Optimize this so that it doesn't split in between words 
