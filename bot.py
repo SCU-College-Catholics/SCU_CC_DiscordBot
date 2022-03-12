@@ -312,21 +312,16 @@ async def on_message(message):
             gospelVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/div/a/text()')[0]
         # The actual Gospel passage
         gospelString = ''
-        i = 1
-        while i:
-            #gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
-            gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span/text()')
+        gospelPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span')
 
-            if (gospelPar == False or gospelPar == []):
-                i = 0
+        if (gospelPar == False or gospelPar == []):
+            print("Content is empty")
+        for span in gospelPar:
+            text = str(span.text_content())
+            if text == 'OR:':
                 break
-            for g in gospelPar:
-                if g == 'OR:':
-                    break
-                gospelString += g
-            gospelString += "\n\n"
-            i += 1
-            break
+            gospelString += text
+        gospelString += "\n\n"
 
         # TODO: Optimize this so that it doesn't split in between words 
         msg = '**' + today.strftime("%A %B %-d, %Y") + ' | ' + gospelVerse + '**\n' + gospelString
@@ -371,23 +366,19 @@ async def on_message(message):
         if tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/div/a/text()'):
             firstVerse = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[1]/div/a/text()')[0]
         
-        # The actual Gospel passage
+        # The actual passage
         firstString = ''
-        i = 1
-        while i:
-            #firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
-            firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span/text()')
+        
+        firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span')
 
-            if (firstPar == False or firstPar == []):
-                i = 0
+        if (firstPar == False or firstPar == []):
+            print("Content is empty")
+        for span in firstPar:
+            text = str(span.text_content())
+            if text == 'OR:':
                 break
-            for f in firstPar:
-                if f == 'OR:':
-                    break
-                firstString += f
-            firstString += "\n\n"
-            i += 1
-            break
+            firstString += text
+        firstString += "\n\n"
 
 
         # TODO: Optimize this so that it doesn't split in between words 
@@ -434,23 +425,18 @@ async def on_message(message):
                 await message.channel.send('No Reading II for today.')
                 return
 
-            # The actual Gospel passage
+            # The actual passage
             firstString = ''
-            i = 1
-            while i:
-                #firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p[' + str(i) + ']/text()')
-                firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span/text()')
+            firstPar = tree.xpath('//*[@id="block-usccb-readings-content"]/div/div[' + str(n) + ']/div/div/div/div/div[2]/p/span/span')
 
-                if (firstPar == False or firstPar == []):
-                    i = 0
+            if (firstPar == False or firstPar == []):
+                print("Content is empty")
+            for span in firstPar:
+                text = str(span.text_content())
+                if text == 'OR:':
                     break
-                for f in firstPar:
-                    if f == 'OR:':
-                        break
-                    firstString += f
-                firstString += "\n\n"
-                i += 1
-                break
+                firstString += text
+            firstString += "\n\n"
 
 
             # TODO: Optimize this so that it doesn't split in between words 
@@ -464,7 +450,7 @@ async def on_message(message):
         today = date.today()
         d = today.strftime("%A")
         advent = False
-        lent = False
+        lent = True
         msg = ''
         if (d == 'Monday' or d == 'Saturday' or (advent and d == 'Sunday')):
             msg += '**The Joyful Mysteries** (' + d + ')\n'
